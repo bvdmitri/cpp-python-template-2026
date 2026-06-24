@@ -1,0 +1,19 @@
+/// @file version.hpp
+/// @brief Library version information (generated from version.hpp.in by CMake).
+#pragma once
+
+#include <string_view>
+
+namespace mylib {
+
+/// @brief Major version component.
+inline constexpr int version_major = @PROJECT_VERSION_MAJOR@;
+/// @brief Minor version component.
+inline constexpr int version_minor = @PROJECT_VERSION_MINOR@;
+/// @brief Patch version component.
+inline constexpr int version_patch = @PROJECT_VERSION_PATCH@;
+
+/// @brief Full version string, e.g. "0.1.0".
+inline constexpr std::string_view version = "@PROJECT_VERSION@";
+
+} // namespace mylib

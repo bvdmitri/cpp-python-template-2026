@@ -1,0 +1,39 @@
+# Pre-commit hooks. Install once with `pre-commit install`, then they run on
+# every commit; run on demand with `make lint`.
+#
+# clang-format / clang-tidy come from Python wheels (cpp-linter-hooks), so
+# contributors do NOT need a manual LLVM install for formatting/linting.
+minimum_pre_commit_version: "3.5.0"
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: https://github.com/cpp-linter/cpp-linter-hooks
+    rev: v0.6.1
+    hooks:
+      - id: clang-format
+        args: [--style=file, --version=18]
+      - id: clang-tidy
+        # Requires compile_commands.json — run `make configure` first.
+        args: [--version=18, -p=out/build/dev]
+
+  - repo: https://github.com/cmake-lint/cmake-lint
+    rev: 1.4.3
+    hooks:
+      - id: cmakelint
+        args: [--linelength=100, "--filter=-readability/wonkycase"]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        args: [--skip, "*.lcov,out,_deps", -L, "crate,ot"]

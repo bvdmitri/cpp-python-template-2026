@@ -1,0 +1,18 @@
+{
+  "//": "Shared, minimal VSCode settings: use clangd + CMake presets, disable the conflicting built-in IntelliSense.",
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.arguments": [
+    "--background-index",
+    "--clang-tidy",
+    "--header-insertion=iwyu",
+    "--compile-commands-dir=${workspaceFolder}"
+  ],
+  "cmake.useCMakePresets": "always",
+  "cmake.options.statusBarVisibility": "compact",
+  "editor.formatOnSave": true,
+  "[cpp]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+  },
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
+}

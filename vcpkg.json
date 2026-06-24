@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "mylib",
+  "version": "0.1.0",
+  "description": "A 2026-grade modern C++ library template",
+  "homepage": "https://github.com/your-org/mylib",
+  "license": "MIT",
+  "builtin-baseline": "930ecc42b512b564571d767f70775d284a6fa307",
+  "dependencies": [],
+  "default-features": [],
+  "features": {
+    "tests": {
+      "description": "Dependencies required to build and run the test suite",
+      "dependencies": [
+        {
+          "name": "catch2",
+          "version>=": "3.7.1"
+        }
+      ]
+    }
+  }
+}

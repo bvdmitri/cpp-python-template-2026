@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+# find_package(mylib CONFIG REQUIRED) entry point.
+# Re-discover any public dependencies here with find_dependency() before
+# including the targets file, e.g.:
+#   include(CMakeFindDependencyMacro)
+#   find_dependency(fmt)
+
+include("${CMAKE_CURRENT_LIST_DIR}/mylib-targets.cmake")
+
+check_required_components(mylib)

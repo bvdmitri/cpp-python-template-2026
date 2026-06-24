@@ -1,0 +1,39 @@
+# clang-format configuration for mylib.
+# Based on LLVM with a few opinionated, agent-friendly tweaks.
+---
+Language: Cpp
+BasedOnStyle: LLVM
+Standard: Latest
+
+ColumnLimit: 100
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Braces on their own line for functions/types reads clearly in diffs.
+BreakBeforeBraces: Mozilla
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+QualifierAlignment: Left
+
+IncludeBlocks: Regroup
+SortIncludes: CaseInsensitive
+IncludeCategories:
+  # Paired header for this TU (handled by clang-format automatically as prio 0)
+  - Regex: '^<mylib/'
+    Priority: 2
+  - Regex: '^<catch2/'
+    Priority: 3
+  - Regex: '^<.*\.(h|hpp)>'
+    Priority: 4
+  - Regex: '^<[^/]*>'
+    Priority: 5
+
+SpaceAfterCStyleCast: true
+FixNamespaceComments: true
+NamespaceIndentation: None
+EmptyLineBeforeAccessModifier: LogicalBlock

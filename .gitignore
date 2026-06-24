@@ -1,0 +1,66 @@
+# Build directories
+build/
+out/
+dist/
+cmake-build-*/
+_deps/
+
+# CMake generated
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+
+# Compile database symlink (regenerated per configure)
+/compile_commands.json
+
+# Compiler / linker artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.gch
+*.pch
+
+# Coverage
+*.gcno
+*.gcda
+*.profraw
+*.profdata
+coverage/
+coverage.txt
+coverage.lcov
+
+# vcpkg (when vendored locally)
+/vcpkg/
+vcpkg_installed/
+
+# Doxygen output
+docs/html/
+docs/latex/
+docs/xml/
+
+# clangd / caches
+.cache/
+
+# IDE noise (keep shared .vscode/{extensions,settings}.json)
+.idea/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

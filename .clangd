@@ -1,0 +1,23 @@
+# clangd configuration — the shared LSP backend for Neovim, VSCode, CLion,
+# Emacs, Zed, Sublime, etc. All editors read the same compile_commands.json,
+# so completion/diagnostics/go-to-def are identical everywhere.
+CompileFlags:
+  # clangd uses compile_commands.json (symlinked to the repo root after a
+  # configure). Add fallback flags for files not yet in the database.
+  Add: [-std=c++26, -Wall, -Wextra]
+  CompilationDatabase: .
+
+Diagnostics:
+  ClangTidy:
+    # Reuse the project's .clang-tidy so editor squiggles match CI.
+    Add: [bugprone-*, performance-*, modernize-*]
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+
+Hover:
+  ShowAKA: true

@@ -1,0 +1,13 @@
+{
+  "//": "Shared, minimal VSCode recommendations. Prefer clangd over the default C/C++ IntelliSense, and drive builds via CMake Tools + presets.",
+  "recommendations": [
+    "llvm-vs-code-extensions.vscode-clangd",
+    "ms-vscode.cmake-tools",
+    "twxs.cmake",
+    "editorconfig.editorconfig",
+    "matepek.vscode-catch2-test-adapter"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.cpptools"
+  ]
+}
