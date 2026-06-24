@@ -1,0 +1,59 @@
+name: Python
+
+# Dedicated quality pipeline for the Python bindings: lint, strict typing, tests,
+# and coverage. Separate from the C++ CI (ci.yml) but an equal first-class gate.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: python-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-type:
+    name: ruff + mypy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lukka/get-cmake@latest
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Ruff lint
+        run: uv run --group dev ruff check .
+      - name: Ruff format check
+        run: uv run --group dev ruff format --check .
+      - name: Mypy (strict)
+        run: uv run --group dev mypy
+
+  test:
+    name: pytest (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, windows-latest]
+        python: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lukka/get-cmake@latest
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Run tests with coverage
+        run: >
+          uv run --python ${{ matrix.python }} --group dev
+          pytest --cov=mylib --cov-branch
+          --cov-report=xml:coverage-python.xml --cov-report=term
+
+      - name: Upload Python coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage-python.xml
+          flags: python
+          name: python-${{ matrix.os }}-py${{ matrix.python }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

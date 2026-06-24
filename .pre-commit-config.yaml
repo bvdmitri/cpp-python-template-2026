@@ -29,6 +29,15 @@ repos:
         args: [--version=18, -p=out/build/dev]
         exclude: '^(bindings|standalone)/'
 
+  # Python: ruff lint + format (mypy runs as a make/CI gate since it needs the
+  # built+installed extension to resolve types).
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.3
     hooks:

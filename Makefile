@@ -44,6 +44,10 @@ release: ## Configure + build the Release preset
 	cmake --preset release
 	cmake --build --preset release
 
+.PHONY: check
+check: test py-check ## Run BOTH pipelines: C++ tests + Python lint/types/tests
+	@echo "All C++ and Python checks passed."
+
 # ---- Sanitizers ------------------------------------------------------------
 
 .PHONY: asan
@@ -98,21 +102,40 @@ standalone: install ## Build the standalone example against the installed librar
 	cmake --build out/build/standalone
 	@echo "Run: ./out/build/standalone/mylib_standalone"
 
-# ---- Python bindings (optional, uv-driven) ---------------------------------
+# ---- Python bindings (uv-driven; `uv run` builds + installs the project) ----
+# These mirror the C++ quality gates for the Python side. `uv run` builds the
+# nanobind extension via scikit-build-core and installs the typed `mylib` package
+# into a managed env, so `import mylib` resolves with stubs.
 
-.PHONY: python
-python: ## Build the Python extension in-tree (nanobind), via uv-managed Python
-	@PYEXE="$$(uv python find $(PY))"; \
-	 cmake -S . -B out/build/python -G Ninja -DCMAKE_BUILD_TYPE=Release \
-	   -DMYLIB_BUILD_PYTHON=ON -DMYLIB_BUILD_TESTS=OFF \
-	   -DPython_EXECUTABLE="$$PYEXE" \
-	   -DPython_ROOT_DIR="$$(dirname $$(dirname $$PYEXE))" && \
-	 cmake --build out/build/python --target mylib_ext
+UVRUN = uv run --python $(PY) --group dev
 
 .PHONY: python-test
-python-test: python ## Run the Python binding tests (pytest via uv)
-	PYTHONPATH="$(CURDIR)/out/build/python/bindings/python" \
-	  uv run --python $(PY) --with pytest pytest bindings/python/tests -q
+python-test: ## Run the Python binding tests (pytest via uv)
+	$(UVRUN) pytest
+
+.PHONY: py-lint
+py-lint: ## Lint + format-check Python (ruff)
+	$(UVRUN) ruff check .
+	$(UVRUN) ruff format --check .
+
+.PHONY: py-format
+py-format: ## Auto-format Python sources (ruff)
+	$(UVRUN) ruff format .
+	$(UVRUN) ruff check --fix .
+
+.PHONY: py-typecheck
+py-typecheck: ## Strict static type-check the bindings (mypy)
+	$(UVRUN) mypy
+
+.PHONY: py-coverage
+py-coverage: ## Python tests with coverage (HTML + xml), via uv
+	$(UVRUN) pytest --cov=mylib --cov-branch \
+	  --cov-report=term --cov-report=xml:out/coverage/python/coverage.xml \
+	  --cov-report=html:out/coverage/python/html
+	@echo "Open out/coverage/python/html/index.html"
+
+.PHONY: py-check
+py-check: py-lint py-typecheck python-test ## All Python gates: lint + types + tests
 
 .PHONY: wheel
 wheel: ## Build a wheel with scikit-build-core (uv)
@@ -120,15 +143,21 @@ wheel: ## Build a wheel with scikit-build-core (uv)
 
 .PHONY: wheel-test
 wheel-test: wheel ## Build the wheel and run pytest against the installed wheel
-	uv run --python $(PY) --with "$$(ls -t dist/*.whl | head -1)" --with pytest \
+	uv run --python $(PY) --with "$$(ls -t dist/*.whl | head -1)" --group dev \
 	  pytest bindings/python/tests -q
 
-# ---- Docs ------------------------------------------------------------------
+# ---- Docs (unified C++ + Python site: Doxygen XML -> Breathe -> Sphinx) -----
 
 .PHONY: docs
-docs: ## Build the Doxygen documentation
-	cmake --preset docs
-	cmake --build --preset docs
+docs: ## Build the unified documentation site (C++ + Python) via uv
+	@mkdir -p docs/_build/doxygen
+	cd docs && doxygen Doxyfile
+	$(UVRUN) --group docs sphinx-build -b html docs docs/_build/html
+	@echo "Open docs/_build/html/index.html"
+
+.PHONY: docs-serve
+docs-serve: docs ## Build docs and serve them locally
+	$(UVRUN) --group docs python -m http.server -d docs/_build/html 8000
 
 # ---- Install / clean -------------------------------------------------------
 

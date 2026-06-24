@@ -43,7 +43,8 @@ coverage.lcov
 /vcpkg/
 vcpkg_installed/
 
-# Doxygen output
+# Docs build output (Doxygen XML + Sphinx HTML)
+docs/_build/
 docs/html/
 docs/latex/
 docs/xml/
@@ -57,6 +58,10 @@ dist/
 *.egg-info/
 __pycache__/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
 
 # IDE noise (keep shared .vscode/{extensions,settings}.json)
 .idea/

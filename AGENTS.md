@@ -10,11 +10,21 @@ making changes. It follows the [agents.md](https://agents.md) convention.
 
 ## Mission
 
-`mylib` is a modern **C++26** library. The shipped feature (`mylib::sum`) is
-intentionally trivial — the substance is the engineering infrastructure:
-TDD-first workflow, cross-platform/cross-arch CI, vcpkg dependencies, sanitizers,
-coverage, linting, docs, and packaging. Keep that bar. Quality and correctness
-beat cleverness.
+`mylib` is a modern **C++26** library **with first-class, integral Python
+bindings**. The shipped feature (`mylib::sum`) is intentionally trivial — the
+substance is the engineering infrastructure: TDD-first workflow,
+cross-platform/cross-arch CI, vcpkg dependencies, sanitizers, coverage, linting,
+docs, and packaging — on **both** the C++ and Python sides. Keep that bar.
+Quality and correctness beat cleverness.
+
+The C++ and Python halves are equally first-class but built by their native
+toolchains: C++ via CMake presets (`make build/test/...`), Python via uv +
+scikit-build-core (`make python-test`, `py-lint`, `py-typecheck`, `py-coverage`).
+`MYLIB_BUILD_PYTHON` defaults ON for a plain `cmake` build; the C++ *presets*
+keep the C++ inner loop fast by leaving it OFF (Python has its own pipeline).
+Both have their own CI (`ci.yml` / `python.yml`) and coverage (Codecov flags
+`cpp` / `python`). When you change the C++ API, keep the bindings + their tests
+in sync.
 
 ## Toolchain Registry — prefer `make`
 
@@ -31,11 +41,16 @@ Use these for all normal work. `make help` lists everything.
 | Format | `make format` | `clang-format -i <files>` |
 | Lint (format+tidy+hooks) | `make lint` | `pre-commit run --all-files` |
 | Static analysis | `make tidy` | `clang-tidy -p out/build/dev <files>` |
-| Docs | `make docs` | `cmake --preset docs && cmake --build --preset docs` |
+| **Check everything** | `make check` | C++ tests + Python lint/types/tests |
+| Docs (C++ + Python) | `make docs` | Doxygen XML → Breathe → Sphinx (via uv) |
 | Install | `make install` | `cmake --install out/build/dev --prefix <p>` |
 | Standalone example | `make standalone` | install, then `cmake -S standalone …` |
 | Format check (CI) | `make format-check` | `clang-format --dry-run -Werror <files>` |
-| **Python** ext + tests | `make python-test` | see `Makefile` (uv-driven) |
+| **Python** tests | `make python-test` | `uv run --group dev pytest` |
+| Python lint+format | `make py-lint` | `uv run --group dev ruff check/format` |
+| Python types (strict) | `make py-typecheck` | `uv run --group dev mypy` |
+| Python coverage | `make py-coverage` | `uv run --group dev pytest --cov` |
+| Python all gates | `make py-check` | py-lint + py-typecheck + python-test |
 | Python wheel | `make wheel` | `uv build --wheel` |
 
 Reach for the verbose `cmake --preset …` form only when you need something the
@@ -95,9 +110,9 @@ New code MUST follow **[docs/design/coding-standards.md](docs/design/coding-stan
 | `src/` | Library implementation (compiled translation units). |
 | `test/` | Catch2 test suite — **write tests here first**. |
 | `cmake/` | CMake helpers: warnings, sanitizers, package config template. |
-| `bindings/python/` | Optional nanobind Python bindings (OFF by default; `MYLIB_BUILD_PYTHON`). |
+| `bindings/python/` | First-class nanobind Python bindings (ruff/mypy/pytest, `uv`-driven). |
 | `standalone/` | Example consumer built against the *installed* library (validates install/export). |
-| `docs/` | Doxygen config + `design/` (architecture, ADRs, coding standards, TDD, deps, Python). |
+| `docs/` | Sphinx site (`conf.py`, `Doxyfile` for XML) + `design/` (architecture, ADRs, coding standards, TDD, deps, Python). |
 | `scripts/` | Helper scripts (e.g. coverage report generation). |
 | `.github/` | CI workflows, issue/PR templates, dependabot. |
 | `CMakeLists.txt`, `CMakePresets.json`, `vcpkg.json` | Build + dependency definition. |

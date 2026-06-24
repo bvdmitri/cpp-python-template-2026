@@ -79,10 +79,12 @@ jobs:
       - uses: lukka/get-cmake@latest
       - name: Build + test with coverage
         run: make coverage
-      - name: Upload to Codecov
+      - name: Upload C++ coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           files: out/coverage/coverage.lcov
+          flags: cpp
+          name: cpp-ubuntu
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

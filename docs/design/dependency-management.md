@@ -99,11 +99,20 @@ relevant `CMakeLists.txt`. This keeps them out of a normal consumer build.
 
 ## Python dependencies (bindings)
 
-The optional Python bindings have a separate dependency story driven by **`uv`**
-and `pyproject.toml` (see [python-compatibility.md](python-compatibility.md)):
-build/runtime deps for the wheel are declared there (`nanobind`,
-`scikit-build-core`), and `uv` provides the interpreter and resolves them. The C++
-core never depends on any Python tooling.
+The Python bindings have their own dependency story driven by **`uv`** and
+`pyproject.toml` (see [python-compatibility.md](python-compatibility.md)):
+
+- **Build deps** (PEP 517): `nanobind`, `scikit-build-core` under `[build-system].requires`.
+- **Dev/docs tooling** via PEP 735 **dependency groups** in `pyproject.toml`:
+  - `[dependency-groups] dev` — `pytest`, `pytest-cov`, `mypy`, `ruff`.
+  - `[dependency-groups] docs` — `sphinx`, `furo`, `breathe`, `myst-parser`, …
+  - Use them with `uv run --group dev <cmd>` (the `make py-*` targets do this).
+- **Add a Python dev dependency**: add it to the relevant group in `pyproject.toml`;
+  `uv` resolves it on the next `uv run` (and updates `uv.lock`). **Runtime** deps of
+  the bindings themselves go under `[project].dependencies`.
+- `uv` provides and pins the interpreter; `uv.lock` pins the resolved versions.
+
+The C++ core never depends on any Python tooling; `requires-python` is `>=3.10`.
 
 ## Alternatives (not used here)
 

@@ -1,0 +1,22 @@
+# Doxygen config for the docs build. Produces XML ONLY — Sphinx (via Breathe)
+# renders the C++ API. Run from the docs/ directory (see `make docs`).
+PROJECT_NAME           = "mylib"
+PROJECT_BRIEF          = "A 2026-grade modern C++ library template"
+OUTPUT_DIRECTORY       = _build/doxygen
+
+INPUT                  = ../include
+FILE_PATTERNS          = *.hpp *.h
+RECURSIVE              = YES
+
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+JAVADOC_AUTOBRIEF      = YES
+BUILTIN_STL_SUPPORT    = YES
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = NO
+
+# Sphinx/Breathe consume XML; no Doxygen HTML/LaTeX.
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+XML_PROGRAMLISTING     = YES

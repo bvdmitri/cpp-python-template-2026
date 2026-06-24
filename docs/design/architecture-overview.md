@@ -12,7 +12,7 @@ include/mylib/   public API (headers) ──┐
                                          ├──> consumers do find_package(mylib)
 src/             implementation ─────────┘     and link mylib::mylib
 test/            Catch2 tests (drive development via TDD)
-bindings/python/ optional nanobind bindings (OFF by default)
+bindings/python/ first-class nanobind bindings (uv + scikit-build-core)
 standalone/      example consumer built against the installed package
 docs/            Doxygen + design docs (this folder)
 cmake/           build helpers + installed package config
@@ -20,13 +20,17 @@ cmake/           build helpers + installed package config
 
 ### Optional components
 
-Two parts are deliberately decoupled and OFF/standalone so the core C++ build is
-never affected:
-- **`bindings/python/`** — built only with `-DMYLIB_BUILD_PYTHON=ON`; uses nanobind
-  + scikit-build-core, driven by `uv`. See
-  [python-compatibility.md](python-compatibility.md).
+- **`bindings/python/`** — a **first-class** part of the project (nanobind +
+  scikit-build-core, driven by `uv`). The CMake option `MYLIB_BUILD_PYTHON`
+  defaults ON for a top-level build, but the C++ *presets* keep it OFF so the C++
+  inner loop stays fast — the Python pipeline is built by its own toolchain
+  (`make python-test`/`py-check`/`wheel`) with its own CI (`python.yml`) and
+  coverage flag. See [python-compatibility.md](python-compatibility.md).
 - **`standalone/`** — a *separate* CMake project that consumes the installed
   library via `find_package`, validating the install/export path (CI: `install.yml`).
+
+Documentation is a single **Sphinx** site (`make docs`) combining the C++ API
+(Breathe ← Doxygen XML) and the Python API (autodoc) — see `docs/conf.py`.
 
 There is exactly one library target, `mylib` (alias `mylib::mylib`). It is a
 compiled library (static by default; `-DBUILD_SHARED_LIBS=ON` makes it shared)

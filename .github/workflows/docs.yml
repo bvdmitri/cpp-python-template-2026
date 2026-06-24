@@ -1,5 +1,7 @@
 name: Docs
 
+# Build the unified C++ + Python documentation (Doxygen XML -> Breathe -> Sphinx)
+# and deploy it to GitHub Pages.
 on:
   push:
     branches: [main]
@@ -20,16 +22,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - name: Install Doxygen + Graphviz
         run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
       - name: Build documentation
-        run: |
-          cmake --preset docs
-          cmake --build --preset docs
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        run: make docs
+      - name: Disable Jekyll on Pages
+        run: touch docs/_build/html/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: out/build/docs/docs/html
+          path: docs/_build/html
 
   deploy:
     needs: build

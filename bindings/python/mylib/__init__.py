@@ -7,6 +7,7 @@ mylib`` rather than importing the raw extension.
 
 from __future__ import annotations
 
-from .mylib_ext import __version__, sum  # noqa: A004 (intentionally shadow builtin)
+from .mylib_ext import __version__ as __version__
+from .mylib_ext import sum as sum
 
 __all__ = ["__version__", "sum"]

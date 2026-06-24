@@ -1,11 +1,13 @@
 # mylib
 
 [![CI](https://github.com/your-org/mylib/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/mylib/actions/workflows/ci.yml)
+[![Python](https://github.com/your-org/mylib/actions/workflows/python.yml/badge.svg)](https://github.com/your-org/mylib/actions/workflows/python.yml)
 [![CodeQL](https://github.com/your-org/mylib/actions/workflows/codeql.yml/badge.svg)](https://github.com/your-org/mylib/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/your-org/mylib/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/mylib)
-[![docs](https://img.shields.io/badge/docs-Doxygen-blue)](https://your-org.github.io/mylib/)
+[![docs](https://img.shields.io/badge/docs-Sphinx-blue)](https://your-org.github.io/mylib/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![C++26](https://img.shields.io/badge/C%2B%2B-26-blue.svg)](https://en.cppreference.com/w/cpp/26)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 
 > **This repository is a template, not a finished library.**
 > It is a 2026-grade, batteries-included starting point for a modern C++ library.
@@ -30,8 +32,9 @@ A complete, opinionated, **2026 modern C++** project skeleton:
 | **Sanitizers** | ASan + UBSan and TSan presets/targets |
 | **Coverage** | `make coverage` → inspectable HTML + lcov; Codecov upload in CI |
 | **CI / CD** | GitHub Actions matrix across **Linux x86_64/arm64, macOS arm64, Windows x64**; CodeQL (build-free); Doxygen → GitHub Pages; release-please |
-| **Docs** | Doxygen + [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css), auto-deployed to Pages |
-| **Python-ready** | Optional [nanobind](https://nanobind.readthedocs.io/) bindings (OFF by default) with its own pytest suite, `uv`-driven build, and cibuildwheel CI — see [python-compatibility.md](docs/design/python-compatibility.md) |
+| **Unified docs** | One [Sphinx](https://www.sphinx-doc.org/) site documenting **both** the C++ API (via Breathe/Doxygen) and the Python API (via autodoc), auto-deployed to Pages |
+| **First-class Python** | Integral [nanobind](https://nanobind.readthedocs.io/) bindings (ON by default) with their own full pipeline — pytest, `ruff`, `mypy --strict`, coverage, type stubs, `uv`-driven, dedicated CI + cibuildwheel — see [python-compatibility.md](docs/design/python-compatibility.md) |
+| **Combined coverage** | C++ (llvm-cov) and Python (coverage.py) reported together in one repo via Codecov flags (`cpp` / `python`) |
 | **Consumer-tested** | A `standalone/` example built against the installed package, verified in CI (validates `find_package`/install) |
 | **IDE-agnostic** | Works identically in **Neovim, VSCode, CLion**, … via `compile_commands.json` + clangd (see [CONTRIBUTING](CONTRIBUTING.md)) |
 | **Agent-ready** | [`AGENTS.md`](AGENTS.md) (+ `CLAUDE.md`), ADRs, and design docs (coding standards, TDD, dependencies, Python) so LLM coding agents extend the code correctly and safely |
@@ -110,13 +113,17 @@ After cloning, do the following to turn it into your real library:
    enable GitHub Pages + Codecov, turn on branch protection (require the CI
    test jobs), and optionally mark the repo a **template** under repo Settings.
 
-## Python bindings (optional)
+## Python bindings (first-class)
 
-Bindings are OFF by default and never affect the C++ build. With [`uv`](https://docs.astral.sh/uv/):
+Bindings are an integral part of the template (ON by default for a top-level
+build) with their own full quality pipeline. With [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
-make python-test   # build the nanobind extension and run its pytest suite
+make py-check      # ruff + mypy --strict + pytest (the Python gate)
+make python-test   # just the pytest suite
+make py-coverage   # tests + coverage (HTML + xml)
 make wheel         # build a wheel (scikit-build-core)
+make check         # run BOTH the C++ and Python pipelines
 ```
 
 ```python
@@ -130,7 +137,7 @@ the binding-friendly API rules and how to expose more of the library.
 
 ## Documentation
 
-- **[API reference](https://your-org.github.io/mylib/)** (Doxygen, auto-deployed)
+- **[Unified docs site](https://your-org.github.io/mylib/)** — C++ **and** Python API in one Sphinx site (auto-deployed); build locally with `make docs`
 - **[Contributing & IDE setup](CONTRIBUTING.md)** — Neovim / VSCode / CLion + `uv`
 - **[Coding standards](docs/design/coding-standards.md)** — stable, fast, safe modern C++
 - **[Test-driven development](docs/design/test-driven-development.md)**

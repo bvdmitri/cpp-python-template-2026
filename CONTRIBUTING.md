@@ -37,18 +37,24 @@ Install the git hooks once: `pre-commit install`.
 
 ## Working on the Python bindings (optional)
 
-The bindings live in `bindings/python/` and are OFF by default. Python tasks are
-driven by **`uv`**, which manages the interpreter for you:
+The bindings in `bindings/python/` are a first-class part of the project with the
+same rigor as the C++ side. Python tasks are driven by **`uv`** (it builds +
+installs the typed package, then runs the tool):
 
 ```bash
-make python        # build the nanobind extension in-tree (uv-managed Python)
-make python-test   # run the pytest suite in bindings/python/tests
+make python-test   # pytest the bindings (TDD: write the failing test first)
+make py-lint       # ruff check + ruff format --check
+make py-typecheck  # mypy --strict (uses generated .pyi stubs)
+make py-coverage   # tests + coverage (HTML + xml)
+make py-check      # all Python gates at once
 make wheel         # build a wheel with scikit-build-core
-make wheel-test    # build the wheel and pytest against the installed package
+make check         # run BOTH the C++ and Python pipelines
 ```
 
-Pick the Python version with `PY=` (default `3.12`), e.g. `make python-test PY=3.11`.
-Keep new bindings thin and add a pytest for the wiring; see
+Pick the Python version with `PY=` (default `3.12`), e.g. `make py-check PY=3.11`.
+Keep new bindings thin and fully typed; add a pytest for the wiring and annotate
+test functions (`-> None`). All Python gates must be green (enforced by
+`python.yml`). See
 [docs/design/python-compatibility.md](docs/design/python-compatibility.md).
 
 ## Set up your IDE

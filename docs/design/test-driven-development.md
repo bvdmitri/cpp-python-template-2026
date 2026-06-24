@@ -107,9 +107,23 @@ Linux/macOS/Windows × x86_64/arm64 matrix, plus sanitizer and coverage lanes. A
 red test fails the job; with branch protection, that blocks the merge. The PR
 template has a checkbox affirming a test was written first.
 
-## Python bindings
+## Python bindings — same discipline, Python tools
 
-The Python layer has its own pytest suite under `bindings/python/tests/`
-(`make python-test`). Those tests cover the *binding wiring* (overloads, keyword
-args, exception mapping); the underlying behavior is already covered by the C++
-suite — don't duplicate the logic tests in Python.
+The Python bindings are a first-class part of the project and follow the same
+TDD/quality discipline with the Python ecosystem's tools (all `uv`-driven):
+
+- **Tests**: pytest under `bindings/python/tests/` (`make python-test`). Write the
+  failing test first, same loop. These cover the *binding wiring* (overloads,
+  keyword args, exception mapping); the arithmetic itself is already covered by
+  the C++ suite — don't duplicate logic tests in Python.
+- **Lint/format**: `ruff` (`make py-lint`) — the analogue of clang-format +
+  clang-tidy.
+- **Types**: `mypy --strict` (`make py-typecheck`) against the generated `.pyi`
+  stubs — annotate tests too (`-> None`), and mark intentionally ill-typed calls
+  with `# type: ignore[...]`.
+- **Coverage**: `coverage.py` via `pytest-cov` (`make py-coverage`), uploaded to
+  Codecov under the `python` flag (C++ under `cpp`).
+
+`make py-check` runs lint + types + tests; `make check` runs the C++ and Python
+pipelines together. CI enforces them in `python.yml`. See
+[python-compatibility.md](python-compatibility.md) for the toolchain details.

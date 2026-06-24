@@ -1,0 +1,39 @@
+# Codecov configuration — combined coverage for the C++ library and the Python
+# bindings in a single repository, separated by flags.
+#
+#   cpp     — C++ coverage (llvm-cov from the Catch2 suite, uploaded by ci.yml)
+#   python  — Python coverage (coverage.py from pytest, uploaded by python.yml)
+#
+# The overall project status aggregates both; per-flag statuses track each
+# language independently.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+      cpp:
+        target: auto
+        flags: [cpp]
+      python:
+        target: auto
+        flags: [python]
+    patch:
+      default:
+        target: auto
+
+flag_management:
+  default_rules:
+    carryforward: true
+  individual_flags:
+    - name: cpp
+      paths:
+        - "include/"
+        - "src/"
+    - name: python
+      paths:
+        - "bindings/python/"
+
+comment:
+  layout: "header, flags, files"
+  require_changes: false

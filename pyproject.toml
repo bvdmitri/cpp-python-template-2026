@@ -12,7 +12,7 @@ name = "mylib"
 version = "0.1.0"
 description = "Python bindings for the mylib C++ library"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "mylib authors" }]
 classifiers = [
@@ -22,6 +22,22 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/your-org/mylib"
+
+# Dev tooling (PEP 735 dependency groups; installed by `uv run --group dev/docs`).
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "mypy>=1.10",
+  "ruff>=0.6",
+]
+docs = [
+  "sphinx>=7.2",
+  "furo>=2024.1",
+  "breathe>=4.35",
+  "myst-parser>=3",
+  "sphinx-copybutton>=0.5",
+]
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
@@ -39,6 +55,49 @@ MYLIB_WARNINGS_AS_ERRORS = "OFF"
 
 [tool.pytest.ini_options]
 testpaths = ["bindings/python/tests"]
+addopts = "-ra"
+
+# --- ruff: lint + format (the Python equivalent of clang-format + clang-tidy) ---
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["out", "_deps"]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",      # pyflakes + pycodestyle
+  "I",                 # isort
+  "N",                 # pep8-naming
+  "UP",                # pyupgrade
+  "B",                 # bugbear
+  "A",                 # builtins shadowing
+  "C4",                # comprehensions
+  "SIM",               # simplify
+  "RUF",               # ruff-specific
+  "PT",                # pytest style
+  "ANN",               # type annotations
+]
+# `sum` intentionally shadows the builtin to mirror the C++ API.
+ignore = ["A001", "A003", "A004"]
+
+[tool.ruff.lint.per-file-ignores]
+"bindings/python/tests/*" = ["ANN"]  # tests need not be fully annotated
+
+# --- mypy: strict static typing against the generated .pyi stubs ---------------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_configs = true
+files = ["bindings/python"]
+
+# --- coverage (coverage.py via pytest-cov) ------------------------------------
+[tool.coverage.run]
+source = ["mylib"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]" # use uv to provision the build environment

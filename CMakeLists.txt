@@ -62,8 +62,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # --- Options -----------------------------------------------------------------
 option(MYLIB_BUILD_TESTS "Build the test suite" ${PROJECT_IS_TOP_LEVEL})
-option(MYLIB_BUILD_DOCS "Build Doxygen documentation" OFF)
-option(MYLIB_BUILD_PYTHON "Build the optional Python bindings (nanobind)" OFF)
+# Documentation is built outside CMake via `make docs` (Doxygen XML + Sphinx).
+# Python bindings are an integral part of the template: ON by default when this
+# is the top-level project. Consumers that add_subdirectory() this library get OFF.
+# Turn off explicitly for a pure-C++ build: -DMYLIB_BUILD_PYTHON=OFF
+option(MYLIB_BUILD_PYTHON "Build the Python bindings (nanobind)" ${PROJECT_IS_TOP_LEVEL})
 option(MYLIB_ENABLE_COVERAGE "Instrument for code coverage" OFF)
 set(MYLIB_SANITIZER "" CACHE STRING
     "Sanitizer to enable: '', 'address', 'address;undefined', or 'thread'")
@@ -83,9 +86,4 @@ endif()
 # --- Python bindings (optional) ---------------------------------------------
 if(MYLIB_BUILD_PYTHON)
   add_subdirectory(bindings/python)
-endif()
-
-# --- Docs -------------------------------------------------------------------
-if(MYLIB_BUILD_DOCS)
-  add_subdirectory(docs)
 endif()

@@ -88,15 +88,18 @@ Python. Layout:
 
 ```
 bindings/python/
-├── CMakeLists.txt        # nanobind (find_package, FetchContent fallback)
-├── module.cpp            # NB_MODULE(mylib_ext): exposes mylib::sum + version
-├── mylib/__init__.py     # Python package re-exporting the extension
-└── tests/test_sum.py     # pytest: verifies the binding wiring
-pyproject.toml            # scikit-build-core + cibuildwheel config
+├── CMakeLists.txt          # nanobind (find_package, FetchContent fallback) + stub gen
+├── module.cpp              # NB_MODULE(mylib_ext): exposes mylib::sum + version
+├── mylib/__init__.py       # Python package re-exporting the extension
+├── mylib/__init__.pyi      # package type stub (adds __version__)
+├── mylib/py.typed          # PEP 561 marker (typed package)
+└── tests/test_sum.py       # pytest: verifies the binding wiring
+pyproject.toml              # scikit-build-core, ruff, mypy, pytest, cibuildwheel,
+                            # and uv dependency-groups (dev, docs)
 ```
 
-Enable with `-DMYLIB_BUILD_PYTHON=ON` (the Makefile/`pyproject.toml` do this for
-you). Minimal module skeleton:
+The build also generates `mylib_ext.pyi` (nanobind stub) next to the extension.
+Minimal module skeleton:
 
 ```cpp
 #include <mylib/mylib.hpp>
@@ -114,26 +117,49 @@ NB_MODULE(mylib_ext, m) {
 > Gotcha: assigning a `std::string` (or any non-builtin) without including its
 > caster (`<nanobind/stl/string.h>`) compiles but throws `std::bad_cast` at import.
 
-## Developer workflow (uv-driven)
+## The bindings are first-class — full quality gates
+
+The Python side mirrors the C++ side's rigor. All tasks are **uv-driven** (`uv run`
+builds + installs the typed `mylib` package, then runs the tool):
 
 ```bash
-make python        # build the extension in-tree (uv provides Python; nanobind via FetchContent if absent)
-make python-test   # pytest the bindings (uv run)
-make wheel         # build a wheel with scikit-build-core (uv build)
-make wheel-test    # build the wheel and pytest against the installed package
+make python-test   # pytest the bindings
+make py-lint       # ruff check + ruff format --check
+make py-typecheck  # mypy --strict (uses the generated .pyi stubs)
+make py-coverage   # pytest --cov=mylib -> HTML + xml
+make py-check      # all three Python gates
+make wheel         # build a wheel (scikit-build-core); wheel-test installs + tests it
+make check         # BOTH pipelines: C++ tests + Python gates
 ```
 
-`uv` selects the interpreter (`PY=3.12` by default; override: `make python PY=3.11`).
-The wheel ships **only** the Python package + extension (the C++ static lib,
-headers, and CMake config are installed separately for C++ consumers via
+- **Typing**: the extension ships a generated stub (`mylib_ext.pyi` via
+  `nanobind_add_stub`) plus a package stub (`mylib/__init__.pyi`) and a `py.typed`
+  marker, so the package is fully typed for `mypy --strict` and for consumers.
+- **Lint/format**: `ruff` (lint + formatter) — the Python analogue of
+  clang-tidy + clang-format. Config in `pyproject.toml`; also a pre-commit hook.
+- **Coverage**: `coverage.py` (via `pytest-cov`); uploaded to Codecov under the
+  `python` flag (C++ uses the `cpp` flag — combined coverage in one repo).
+- `uv` selects the interpreter (`PY=3.12` default; override: `make py-check PY=3.11`).
+
+The wheel ships **only** the Python package + extension + stubs (the C++ static
+lib, headers, and CMake config are installed separately for C++ consumers via
 `cmake --install`, controlled by `install.components` in `pyproject.toml`).
 
-## CI
+## Build model (ON by default, but built by its own toolchain)
 
-`.github/workflows/wheels.yml` runs **cibuildwheel** (Linux/macOS/Windows) to
-produce wheels. It is intentionally **separate from core CI** and triggers on
-tags / `workflow_dispatch`, so day-to-day C++ development is never gated on the
-Python build. The core CI matrix builds the library with `MYLIB_BUILD_PYTHON` OFF.
+`MYLIB_BUILD_PYTHON` defaults **ON** for a plain top-level `cmake` build, so the
+bindings are an integral part of the project. The C++ **presets** keep it OFF so
+the C++ inner loop / matrix stay fast and Python-free; the Python pipeline is
+built the idiomatic way — `uv` + scikit-build-core — which also handles wheels.
+
+## CI & docs
+
+- **`.github/workflows/python.yml`** — the dedicated Python pipeline: ruff, mypy
+  strict, and pytest+coverage across Linux/macOS/Windows × Python 3.10/3.12/3.13.
+- **`.github/workflows/wheels.yml`** — `cibuildwheel` wheels on tags /
+  `workflow_dispatch` (separate so day-to-day work isn't gated on it).
+- **Docs** — the Python API is part of the **unified Sphinx site** (`make docs`)
+  alongside the C++ API; autodoc imports the installed package.
 
 ## Adding more bindings later
 
