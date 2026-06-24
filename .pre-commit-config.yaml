@@ -26,8 +26,13 @@ repos:
         # Requires compile_commands.json — run `make configure` first.
         # Bindings are excluded: nanobind's NB_MODULE macro expands to code that
         # intentionally violates our strict checks (it's generated, not ours).
+        # Only lint .cpp translation units (headers are analyzed transitively;
+        # running clang-tidy on a bare header has no compile-db entry).
         args: [--version=18, -p=out/build/dev]
-        exclude: '^(bindings|standalone)/'
+        # Lint the library TUs only; headers are checked transitively via
+        # HeaderFilterRegex in .clang-tidy. Test files (Catch2 macros) and the
+        # nanobind bindings generate code that intentionally trips strict checks.
+        files: '^src/.*\.cpp$'
 
   # Python: ruff lint + format (mypy runs as a make/CI gate since it needs the
   # built+installed extension to resolve types).
@@ -42,7 +47,9 @@ repos:
     rev: 1.4.3
     hooks:
       - id: cmakelint
-        args: [--linelength=100, "--filter=-readability/wonkycase"]
+        # -whitespace/indent: CMake multi-line argument indentation is stylistic
+        # and already handled consistently by hand.
+        args: [--linelength=100, "--filter=-readability/wonkycase,-whitespace/indent"]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0

@@ -17,7 +17,7 @@ builds when vcpkg isn't present. Three files cooperate:
 
 ### vcpkg.json anatomy
 
-```jsonc
+```json
 {
   "name": "mylib",
   "version": "0.1.0",
@@ -61,7 +61,7 @@ for binary caching (note: the old `x-gha` provider was removed in June 2025).
 Say you want `fmt` as a **public** dependency (it appears in your headers):
 
 1. **Declare it** in `vcpkg.json`:
-   ```jsonc
+   ```json
    "dependencies": [{ "name": "fmt", "version>=": "11.0.0" }]
    ```
 2. **Find & link it** in CMake (`src/CMakeLists.txt`):

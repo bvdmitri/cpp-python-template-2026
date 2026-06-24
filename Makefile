@@ -107,7 +107,10 @@ standalone: install ## Build the standalone example against the installed librar
 # nanobind extension via scikit-build-core and installs the typed `mylib` package
 # into a managed env, so `import mylib` resolves with stubs.
 
-UVRUN = uv run --python $(PY) --group dev
+# --no-editable: install the BUILT package (with the compiled extension inside
+# the `mylib` package) rather than an editable redirect to the source dir, so
+# `import mylib.mylib_ext` resolves. Without it, autodoc/pytest can't find the ext.
+UVRUN = uv run --python $(PY) --no-editable --group dev
 
 .PHONY: python-test
 python-test: ## Run the Python binding tests (pytest via uv)

@@ -22,9 +22,11 @@ NB_MODULE(mylib_ext, m)
     m.attr("__version__") = std::string{mylib::version};
 
     // The generic sum() is a template; bindings must expose concrete overloads.
-    m.def("sum", [](long long a, long long b) { return mylib::sum(a, b); },
-          "a"_a, "b"_a, "Return the sum of two integers.");
+    m.def(
+        "sum", [](long long a, long long b) { return mylib::sum(a, b); }, "a"_a, "b"_a,
+        "Return the sum of two integers.");
 
-    m.def("sum", [](double a, double b) { return mylib::sum(a, b); },
-          "a"_a, "b"_a, "Return the sum of two floating-point numbers.");
+    m.def(
+        "sum", [](double a, double b) { return mylib::sum(a, b); }, "a"_a, "b"_a,
+        "Return the sum of two floating-point numbers.");
 }

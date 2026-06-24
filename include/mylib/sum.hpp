@@ -31,8 +31,7 @@ concept Number = std::integral<T> || std::floating_point<T>;
 /// @code
 /// static_assert(mylib::sum(2, 3) == 5);
 /// @endcode
-template <Number T>
-[[nodiscard]] constexpr T sum(T a, T b) noexcept
+template <Number T> [[nodiscard]] constexpr T sum(T a, T b) noexcept
 {
     return a + b;
 }

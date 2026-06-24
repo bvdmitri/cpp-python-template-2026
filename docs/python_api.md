@@ -11,4 +11,3 @@ Generated from the installed `mylib` package (docstrings + nanobind type stubs).
 
 .. autofunction:: mylib.sum
 ```
-

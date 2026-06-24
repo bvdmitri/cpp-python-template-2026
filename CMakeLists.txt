@@ -33,6 +33,10 @@ set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# We use classic headers, not C++20 modules. Disabling the module scanner keeps
+# compile_commands.json free of `@...modmap` flags that clang-tidy cannot read.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 # Hide symbols by default; the export header opts symbols back in. This keeps
 # shared-library ABI small and matches MSVC's dllexport model on every platform.
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)

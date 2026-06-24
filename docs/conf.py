@@ -31,7 +31,13 @@ source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 myst_enable_extensions = ["colon_fence", "deflist"]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "design", "Thumbs.db", ".DS_Store"]
+# Design docs ARE included in the site (Developer Guide). Only the ADR template
+# (a placeholder) is excluded so it doesn't warn as an orphan page.
+exclude_patterns = ["_build", "design/adr/template.md", "Thumbs.db", ".DS_Store"]
+
+# Cross-file links in the included repo-root docs (AGENTS.md, etc.) point at the
+# repo, not the doc tree; don't fail the build over those.
+suppress_warnings = ["myst.xref_missing", "toc.not_included"]
 
 # --- Theme ------------------------------------------------------------------
 html_theme = "furo"

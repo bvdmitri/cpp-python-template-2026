@@ -10,11 +10,25 @@ cross-platform CI, sanitizers, coverage, packaging, and these docs). See the
 
 ```{toctree}
 :maxdepth: 2
-:caption: Contents
+:caption: User Guide
 
 guide
 cpp_api
 python_api
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Developer Guide
+
+contributing
+design/architecture-overview
+design/coding-standards
+design/test-driven-development
+design/dependency-management
+design/python-compatibility
+design/adr/0001-record-architecture-decisions
+agents
 ```
 
 ## At a glance
