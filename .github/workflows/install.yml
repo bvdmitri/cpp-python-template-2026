@@ -22,7 +22,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lukka/get-cmake@latest
 
       - name: Install GCC 14 (Linux)
