@@ -23,7 +23,7 @@ concept Number = std::integral<T> || std::floating_point<T>;
 /// This is a `constexpr` template usable in constant expressions. It is
 /// `noexcept` because built-in arithmetic never throws.
 ///
-/// @tparam T an arithmetic type satisfying @ref Number
+/// @tparam T an arithmetic type satisfying the Number concept
 /// @param a the left addend
 /// @param b the right addend
 /// @returns `a + b`
