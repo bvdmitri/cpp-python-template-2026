@@ -17,4 +17,4 @@ jobs:
       # Manifest mode: version + release-type come from release-please-config.json
       # and .release-please-manifest.json (anchored at the real 0.1.0, so it does
       # not propose a bogus 1.0.0).
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
