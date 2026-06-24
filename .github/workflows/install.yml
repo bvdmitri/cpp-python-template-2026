@@ -35,8 +35,11 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Configure + build the library
+      - name: Configure the library
         run: cmake --preset dev -DMYLIB_BUILD_TESTS=OFF
+
+      - name: Build the library
+        run: cmake --build --preset dev
 
       - name: Install to a prefix
         run: cmake --install out/build/dev --prefix "${{ runner.temp }}/prefix"
