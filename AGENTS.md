@@ -33,6 +33,10 @@ Use these for all normal work. `make help` lists everything.
 | Static analysis | `make tidy` | `clang-tidy -p out/build/dev <files>` |
 | Docs | `make docs` | `cmake --preset docs && cmake --build --preset docs` |
 | Install | `make install` | `cmake --install out/build/dev --prefix <p>` |
+| Standalone example | `make standalone` | install, then `cmake -S standalone …` |
+| Format check (CI) | `make format-check` | `clang-format --dry-run -Werror <files>` |
+| **Python** ext + tests | `make python-test` | see `Makefile` (uv-driven) |
+| Python wheel | `make wheel` | `uv build --wheel` |
 
 Reach for the verbose `cmake --preset …` form only when you need something the
 Makefile doesn't expose (a custom cache variable, a one-off preset, IDE-driven
@@ -91,11 +95,22 @@ New code MUST follow **[docs/design/coding-standards.md](docs/design/coding-stan
 | `src/` | Library implementation (compiled translation units). |
 | `test/` | Catch2 test suite — **write tests here first**. |
 | `cmake/` | CMake helpers: warnings, sanitizers, package config template. |
-| `docs/` | Doxygen config + `design/` (architecture, ADRs, coding standards). |
+| `bindings/python/` | Optional nanobind Python bindings (OFF by default; `MYLIB_BUILD_PYTHON`). |
+| `standalone/` | Example consumer built against the *installed* library (validates install/export). |
+| `docs/` | Doxygen config + `design/` (architecture, ADRs, coding standards, TDD, deps, Python). |
 | `scripts/` | Helper scripts (e.g. coverage report generation). |
 | `.github/` | CI workflows, issue/PR templates, dependabot. |
 | `CMakeLists.txt`, `CMakePresets.json`, `vcpkg.json` | Build + dependency definition. |
+| `pyproject.toml` | Python wheel build (scikit-build-core); used only for bindings. |
 | `Makefile` | Primary task runner (wraps the presets). |
+
+### Design docs (read before working in the relevant area)
+
+- **[coding-standards.md](docs/design/coding-standards.md)** — stable/fast/safe modern C++ (required before writing code).
+- **[test-driven-development.md](docs/design/test-driven-development.md)** — the full TDD treatment.
+- **[dependency-management.md](docs/design/dependency-management.md)** — how to add/remove dependencies.
+- **[python-compatibility.md](docs/design/python-compatibility.md)** — keep new public API binding-friendly.
+- **[architecture-overview.md](docs/design/architecture-overview.md)** + **[adr/](docs/design/adr/)** — structure & decisions.
 
 ## Conventions
 
@@ -106,3 +121,8 @@ New code MUST follow **[docs/design/coding-standards.md](docs/design/coding-stan
   exceptional; never let exceptions cross an ABI boundary.
 - Formatting/linting are enforced (`.clang-format`, `.clang-tidy`); run
   `make lint` — do not hand-format against the style.
+- **Design new public API to be Python-binding-friendly** (value semantics, no
+  owning raw pointers, bindable types, templates out of the public surface) — see
+  [python-compatibility.md](docs/design/python-compatibility.md).
+- Python tooling uses **`uv`** (e.g. `make python-test`, `make wheel`). The C++
+  core never depends on Python.

@@ -1,0 +1,47 @@
+name: Wheels
+
+# Builds the optional Python bindings as cross-platform wheels with cibuildwheel.
+# Kept SEPARATE from core CI and triggered on tags / manually, so normal C++
+# development is never gated on the Python build.
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+  release:
+    types: [published]
+
+jobs:
+  build-wheels:
+    name: wheels (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-14, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.21
+        # Configuration (build-frontend=build[uv], test-command, archs) lives in
+        # [tool.cibuildwheel] in pyproject.toml.
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+
+  # Build the source distribution too.
+  build-sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build --sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: ./dist/*.tar.gz

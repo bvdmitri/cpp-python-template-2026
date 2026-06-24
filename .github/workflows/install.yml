@@ -1,0 +1,36 @@
+name: Install
+
+# Validates the install/export path: install the library, then build the
+# standalone/ example against it via find_package (as a real consumer would).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  install-and-consume:
+    name: install + standalone (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lukka/get-cmake@latest
+
+      - name: Configure + build the library
+        run: cmake --preset dev -DMYLIB_BUILD_TESTS=OFF
+
+      - name: Install to a prefix
+        run: cmake --install out/build/dev --prefix "${{ runner.temp }}/prefix"
+
+      - name: Build the standalone example against the installed library
+        run: |
+          cmake -S standalone -B out/build/standalone -G Ninja \
+            -DCMAKE_PREFIX_PATH="${{ runner.temp }}/prefix"
+          cmake --build out/build/standalone
+
+      - name: Run the standalone example
+        run: ./out/build/standalone/mylib_standalone

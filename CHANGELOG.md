@@ -18,5 +18,12 @@ via release-please, so prefer letting automation update this file.
 - CI: cross-platform/cross-arch matrix, CodeQL, Doxygen→Pages, release-please.
 - Docs: Doxygen + doxygen-awesome-css; `AGENTS.md`/`CLAUDE.md`, coding standards,
   architecture overview, and ADRs.
+- Optional Python bindings (`bindings/python/`, nanobind, OFF by default) with a
+  pytest suite, `uv`-driven build (`make python-test`/`make wheel`), and a
+  cibuildwheel CI workflow.
+- `standalone/` example consumer + `install.yml` CI validating the install/export path.
+- Design docs: `python-compatibility.md`, `test-driven-development.md`,
+  `dependency-management.md`.
+- `make format-check` target and an in-source-build guard.
 
 [Unreleased]: https://github.com/your-org/mylib/commits/main

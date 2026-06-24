@@ -24,7 +24,10 @@ repos:
         args: [--style=file, --version=18]
       - id: clang-tidy
         # Requires compile_commands.json — run `make configure` first.
+        # Bindings are excluded: nanobind's NB_MODULE macro expands to code that
+        # intentionally violates our strict checks (it's generated, not ours).
         args: [--version=18, -p=out/build/dev]
+        exclude: '^(bindings|standalone)/'
 
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.3

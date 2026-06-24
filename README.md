@@ -31,8 +31,10 @@ A complete, opinionated, **2026 modern C++** project skeleton:
 | **Coverage** | `make coverage` → inspectable HTML + lcov; Codecov upload in CI |
 | **CI / CD** | GitHub Actions matrix across **Linux x86_64/arm64, macOS arm64, Windows x64**; CodeQL (build-free); Doxygen → GitHub Pages; release-please |
 | **Docs** | Doxygen + [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css), auto-deployed to Pages |
+| **Python-ready** | Optional [nanobind](https://nanobind.readthedocs.io/) bindings (OFF by default) with its own pytest suite, `uv`-driven build, and cibuildwheel CI — see [python-compatibility.md](docs/design/python-compatibility.md) |
+| **Consumer-tested** | A `standalone/` example built against the installed package, verified in CI (validates `find_package`/install) |
 | **IDE-agnostic** | Works identically in **Neovim, VSCode, CLion**, … via `compile_commands.json` + clangd (see [CONTRIBUTING](CONTRIBUTING.md)) |
-| **Agent-ready** | [`AGENTS.md`](AGENTS.md) (+ `CLAUDE.md`), ADRs, and a [coding-standards](docs/design/coding-standards.md) design doc so LLM coding agents extend the code correctly and safely |
+| **Agent-ready** | [`AGENTS.md`](AGENTS.md) (+ `CLAUDE.md`), ADRs, and design docs (coding standards, TDD, dependencies, Python) so LLM coding agents extend the code correctly and safely |
 
 ## Quick start
 
@@ -83,10 +85,13 @@ After cloning, do the following to turn it into your real library:
    # Replace contents everywhere (use `sed -i` without '' on GNU/Linux):
    grep -rl --exclude-dir=out --exclude-dir=.git 'mylib\|MYLIB' . \
      | xargs sed -i '' "s/mylib/$NEW/g; s/MYLIB/$(echo $NEW | tr a-z A-Z)/g"   # macOS sed
-   # Rename the directory and the umbrella header (the only name-bearing files):
+   # Rename the name-bearing files/dirs (contents are already replaced above):
    git mv include/mylib include/$NEW
    git mv include/$NEW/mylib.hpp include/$NEW/$NEW.hpp
+   git mv bindings/python/mylib bindings/python/$NEW   # Python package dir
    ```
+   (The Python extension module name `mylib_ext` and the `pyproject.toml` package
+   name are updated by the content replace above.)
    Then run `make test` — it should still be green (this is exercised by the
    rename-sanity check in CONTRIBUTING/verification).
 2. **Update project metadata**: `project(... VERSION ...)` in `CMakeLists.txt`,
@@ -105,11 +110,32 @@ After cloning, do the following to turn it into your real library:
    enable GitHub Pages + Codecov, turn on branch protection (require the CI
    test jobs), and optionally mark the repo a **template** under repo Settings.
 
+## Python bindings (optional)
+
+Bindings are OFF by default and never affect the C++ build. With [`uv`](https://docs.astral.sh/uv/):
+
+```bash
+make python-test   # build the nanobind extension and run its pytest suite
+make wheel         # build a wheel (scikit-build-core)
+```
+
+```python
+import mylib
+mylib.sum(2, 3)        # 5
+mylib.__version__      # "0.1.0"
+```
+
+See [docs/design/python-compatibility.md](docs/design/python-compatibility.md) for
+the binding-friendly API rules and how to expose more of the library.
+
 ## Documentation
 
 - **[API reference](https://your-org.github.io/mylib/)** (Doxygen, auto-deployed)
-- **[Contributing & IDE setup](CONTRIBUTING.md)** — Neovim / VSCode / CLion
+- **[Contributing & IDE setup](CONTRIBUTING.md)** — Neovim / VSCode / CLion + `uv`
 - **[Coding standards](docs/design/coding-standards.md)** — stable, fast, safe modern C++
+- **[Test-driven development](docs/design/test-driven-development.md)**
+- **[Dependency management](docs/design/dependency-management.md)** — add/remove deps
+- **[Python compatibility](docs/design/python-compatibility.md)**
 - **[Architecture & ADRs](docs/design/)**
 - **[Agent guide](AGENTS.md)**
 
@@ -117,7 +143,9 @@ After cloning, do the following to turn it into your real library:
 
 A C++26-capable compiler (GCC 16+, Clang 18+, MSVC 19.4x+), CMake ≥ 3.28, and
 Ninja. vcpkg is optional. GNU Make is used for the task runner (Windows: use
-WSL/Git-Bash, or call the `cmake --preset` commands directly).
+WSL/Git-Bash, or call the `cmake --preset` commands directly). For the optional
+Python bindings, [`uv`](https://docs.astral.sh/uv/) provides the interpreter and
+build tooling.
 
 ## License
 

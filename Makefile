@@ -12,6 +12,7 @@
 # Override on the command line, e.g. `make install PREFIX=/usr/local`.
 PREFIX     ?= out/install/dev
 COV_DIR    ?= out/coverage
+PY         ?= 3.12       # Python version for uv-driven targets
 
 .DEFAULT_GOAL := help
 
@@ -82,6 +83,45 @@ format: ## Format all C++ sources in place with clang-format
 .PHONY: tidy
 tidy: configure ## Run clang-tidy over the compile database
 	clang-tidy -p out/build/dev $$(find include src test -name '*.cpp')
+
+.PHONY: format-check
+format-check: ## Check formatting without modifying files (CI-friendly)
+	@find include src test standalone bindings -name '*.hpp' -o -name '*.cpp' -o -name '*.h' \
+	  | xargs clang-format --dry-run -Werror
+	@echo "Formatting OK."
+
+# ---- Standalone consumer example ------------------------------------------
+
+.PHONY: standalone
+standalone: install ## Build the standalone example against the installed library
+	cmake -S standalone -B out/build/standalone -G Ninja -DCMAKE_PREFIX_PATH="$(CURDIR)/$(PREFIX)"
+	cmake --build out/build/standalone
+	@echo "Run: ./out/build/standalone/mylib_standalone"
+
+# ---- Python bindings (optional, uv-driven) ---------------------------------
+
+.PHONY: python
+python: ## Build the Python extension in-tree (nanobind), via uv-managed Python
+	@PYEXE="$$(uv python find $(PY))"; \
+	 cmake -S . -B out/build/python -G Ninja -DCMAKE_BUILD_TYPE=Release \
+	   -DMYLIB_BUILD_PYTHON=ON -DMYLIB_BUILD_TESTS=OFF \
+	   -DPython_EXECUTABLE="$$PYEXE" \
+	   -DPython_ROOT_DIR="$$(dirname $$(dirname $$PYEXE))" && \
+	 cmake --build out/build/python --target mylib_ext
+
+.PHONY: python-test
+python-test: python ## Run the Python binding tests (pytest via uv)
+	PYTHONPATH="$(CURDIR)/out/build/python/bindings/python" \
+	  uv run --python $(PY) --with pytest pytest bindings/python/tests -q
+
+.PHONY: wheel
+wheel: ## Build a wheel with scikit-build-core (uv)
+	uv build --wheel --python $(PY)
+
+.PHONY: wheel-test
+wheel-test: wheel ## Build the wheel and run pytest against the installed wheel
+	uv run --python $(PY) --with "$$(ls -t dist/*.whl | head -1)" --with pytest \
+	  pytest bindings/python/tests -q
 
 # ---- Docs ------------------------------------------------------------------
 

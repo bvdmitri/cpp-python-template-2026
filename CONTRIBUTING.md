@@ -10,6 +10,8 @@ purpose. Please read [AGENTS.md](AGENTS.md) and
 - CMake ≥ 3.28 and Ninja
 - GNU Make (Windows: WSL or Git-Bash; or use the `cmake --preset` commands)
 - Optional: [vcpkg](https://vcpkg.io) (set `VCPKG_ROOT`), `pre-commit`, Doxygen
+- For the optional Python bindings: [`uv`](https://docs.astral.sh/uv/) (it
+  provides the interpreter and build tooling — no system Python setup needed)
 
 ## The TDD workflow (required)
 
@@ -32,6 +34,22 @@ make lint        # clang-format + clang-tidy + hooks
 ```
 
 Install the git hooks once: `pre-commit install`.
+
+## Working on the Python bindings (optional)
+
+The bindings live in `bindings/python/` and are OFF by default. Python tasks are
+driven by **`uv`**, which manages the interpreter for you:
+
+```bash
+make python        # build the nanobind extension in-tree (uv-managed Python)
+make python-test   # run the pytest suite in bindings/python/tests
+make wheel         # build a wheel with scikit-build-core
+make wheel-test    # build the wheel and pytest against the installed package
+```
+
+Pick the Python version with `PY=` (default `3.12`), e.g. `make python-test PY=3.11`.
+Keep new bindings thin and add a pytest for the wiring; see
+[docs/design/python-compatibility.md](docs/design/python-compatibility.md).
 
 ## Set up your IDE
 
@@ -62,6 +80,25 @@ everywhere. Run `make configure` (or `make build`) once first to generate it.
   the IDE matches CI exactly. CTest integration runs the Catch2 suite.
 
 Whatever the editor: configure once, then **write a failing test first**.
+
+### Python tooling in your IDE (uv)
+
+C++ editing (clangd) is unaffected by Python — the two stacks are independent. For
+the optional bindings, point your editor's **Python interpreter at the uv-managed
+environment** so imports, completion, and the test runner resolve:
+
+- Create/refresh it once: `uv venv && uv sync` (or run any `make python-test`,
+  which provisions an environment on the fly). uv places it at `.venv/` (gitignored).
+- **Neovim** — point `pyright`/`basedpyright` (or `ruff`) at `.venv`; or just run
+  `make python-test` from a terminal. `nvim-dap-python` can use `.venv/bin/python`.
+- **VS Code** — "Python: Select Interpreter" → `.venv/bin/python`. The Python
+  extension then runs the `bindings/python/tests` suite in the Test Explorer.
+- **CLion / PyCharm** — add a Python SDK pointing at `.venv` (or "uv" if your
+  version supports it natively).
+
+You never need a system Python: `uv` downloads and pins the interpreter
+(`PY=3.12` by default). The C++ build only involves Python when
+`MYLIB_BUILD_PYTHON=ON`.
 
 ## Pull requests
 

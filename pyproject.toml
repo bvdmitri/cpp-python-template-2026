@@ -1,0 +1,50 @@
+# Python packaging for the optional mylib bindings.
+#
+# Build a wheel with:  pip wheel . --no-deps -w dist/
+# scikit-build-core invokes CMake with MYLIB_BUILD_PYTHON=ON and packages the
+# nanobind extension. The core C++ library has no dependency on any of this.
+[build-system]
+requires = ["scikit-build-core >=0.10", "nanobind >=2.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "mylib"
+version = "0.1.0"
+description = "Python bindings for the mylib C++ library"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [{ name = "mylib authors" }]
+classifiers = [
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-org/mylib"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+build-dir = "out/wheel/{wheel_tag}"
+wheel.packages = ["bindings/python/mylib"]
+# Ship only the Python extension in the wheel, not the C++ static lib / headers /
+# CMake config (those are for C++ consumers via `cmake --install`, not pip users).
+install.components = ["python"]
+cmake.version = ">=3.28"
+
+[tool.scikit-build.cmake.define]
+MYLIB_BUILD_PYTHON = "ON"
+MYLIB_BUILD_TESTS = "OFF"
+MYLIB_WARNINGS_AS_ERRORS = "OFF"
+
+[tool.pytest.ini_options]
+testpaths = ["bindings/python/tests"]
+
+[tool.cibuildwheel]
+build-frontend = "build[uv]" # use uv to provision the build environment
+# Smoke-test each built wheel by importing the module.
+test-command = "python -c \"import mylib; print(mylib.sum(2, 3))\""
+test-skip = "pp* *-musllinux_*"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]

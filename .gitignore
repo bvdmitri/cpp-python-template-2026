@@ -51,6 +51,13 @@ docs/xml/
 # clangd / caches
 .cache/
 
+# Python (uv) virtual env, wheels, caches
+.venv/
+dist/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+
 # IDE noise (keep shared .vscode/{extensions,settings}.json)
 .idea/
 .vs/

@@ -124,6 +124,10 @@ direction; WG21 chose Profiles (Stroustrup [P3081]/[P3651]) over "Safe C++".)
   Every public symbol carries a Doxygen block (`@brief`/`@param`/`@returns`).
 - ✅ Keep functions testable; prefer pure functions and dependency injection over
   hidden global state.
+- ✅ **Design the public API to be Python-binding-friendly** — value semantics, no
+  owning raw pointers, bindable STL types, and templates kept out of the public
+  signature. These rules overlap with the above; see
+  [python-compatibility.md](python-compatibility.md) for the full checklist.
 
 ## 5. Anti-patterns — reject in review
 
