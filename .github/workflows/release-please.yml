@@ -14,8 +14,7 @@ jobs:
     steps:
       # Maintains a release PR from Conventional Commits and tags releases on
       # merge, driving CHANGELOG.md and version bumps.
+      # Manifest mode: version + release-type come from release-please-config.json
+      # and .release-please-manifest.json (anchored at the real 0.1.0, so it does
+      # not propose a bogus 1.0.0).
       - uses: googleapis/release-please-action@v4
-        with:
-          # release-please has no dedicated C++ type; "simple" tracks the version
-          # and CHANGELOG and creates tags/releases from Conventional Commits.
-          release-type: simple

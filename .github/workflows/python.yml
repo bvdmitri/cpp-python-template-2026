@@ -20,11 +20,11 @@ jobs:
       CC: gcc-14
       CXX: g++-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lukka/get-cmake@latest
       - name: Install GCC 14
         run: sudo apt-get update && sudo apt-get install -y gcc-14 g++-14
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
       - name: Ruff lint
@@ -44,7 +44,7 @@ jobs:
         os: [ubuntu-latest, macos-14]
         python: ["3.10", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lukka/get-cmake@latest
 
       - name: Install GCC 14 (Linux)
@@ -60,7 +60,7 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
       - name: Run tests with coverage
@@ -70,7 +70,7 @@ jobs:
           --cov-report=xml:coverage-python.xml --cov-report=term
 
       - name: Upload Python coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: coverage-python.xml
           flags: python

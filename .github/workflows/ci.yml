@@ -32,7 +32,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Ninja + CMake
         uses: lukka/get-cmake@latest
@@ -75,7 +75,7 @@ jobs:
       CC: clang
       CXX: clang++
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lukka/get-cmake@latest
       - run: cmake --preset ${{ matrix.preset }}
       - run: cmake --build --preset ${{ matrix.preset }}
@@ -90,7 +90,7 @@ jobs:
       CC: clang-18
       CXX: clang++-18
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lukka/get-cmake@latest
       - name: Install Clang + LLVM coverage tools
         run: |
@@ -101,7 +101,7 @@ jobs:
       - name: Build + test with coverage
         run: make coverage
       - name: Upload C++ coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: out/coverage/coverage.lcov
           flags: cpp
@@ -119,11 +119,11 @@ jobs:
       CC: clang-18
       CXX: clang++-18
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lukka/get-cmake@latest
       - name: Install Clang 18
         run: sudo apt-get update && sudo apt-get install -y clang-18
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.x" }
       - name: Generate compile database (clang, for matching clang-tidy)
         run: cmake --preset dev
