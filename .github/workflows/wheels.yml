@@ -25,7 +25,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21
+        uses: pypa/cibuildwheel@v4.1
         # Configuration (build-frontend=build[uv], test-command, archs) lives in
         # [tool.cibuildwheel] in pyproject.toml.
 
