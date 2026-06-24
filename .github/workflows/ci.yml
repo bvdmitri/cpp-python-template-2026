@@ -26,7 +26,8 @@ jobs:
           - { name: "Linux x86_64 (gcc-14)", os: ubuntu-latest,    preset: dev, cc: gcc-14, cxx: g++-14 }
           - { name: "Linux arm64 (gcc-14)",  os: ubuntu-24.04-arm, preset: dev, cc: gcc-14, cxx: g++-14 }
           - { name: "macOS arm64 (clang)",   os: macos-14,         preset: dev }
-          - { name: "Windows x64 (msvc)",    os: windows-latest,   preset: dev }
+          # MSVC does not yet expose a CMake C++26 dialect; use LLVM Clang on Windows.
+          - { name: "Windows x64 (clang)",   os: windows-latest,   preset: dev, cc: clang, cxx: clang++ }
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
@@ -46,6 +47,7 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # LLVM Clang on Windows needs the MSVC toolchain (headers/libs/linker).
       - name: Set up MSVC environment (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
@@ -85,11 +87,17 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     env:
-      CC: clang
-      CXX: clang++
+      CC: clang-18
+      CXX: clang++-18
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
+      - name: Install Clang + LLVM coverage tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-18 llvm-18
+          # Put llvm-cov / llvm-profdata (unversioned) on PATH for scripts/coverage.sh
+          echo "/usr/lib/llvm-18/bin" >> "$GITHUB_PATH"
       - name: Build + test with coverage
         run: make coverage
       - name: Upload C++ coverage to Codecov
@@ -107,12 +115,17 @@ jobs:
   # ---------------------------------------------------------------------------
   lint:
     runs-on: ubuntu-latest
+    env:
+      CC: clang-18
+      CXX: clang++-18
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
+      - name: Install Clang 18
+        run: sudo apt-get update && sudo apt-get install -y clang-18
       - uses: actions/setup-python@v5
         with: { python-version: "3.x" }
-      - name: Generate compile database
+      - name: Generate compile database (clang, for matching clang-tidy)
         run: cmake --preset dev
       - name: Install pre-commit
         run: pip install pre-commit

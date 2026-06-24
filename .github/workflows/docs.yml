@@ -19,14 +19,17 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CC: gcc-14
+      CXX: g++-14
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Install Doxygen + Graphviz
-        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+      - name: Install Doxygen, Graphviz, GCC 14
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz gcc-14 g++-14
       - name: Build documentation
         run: make docs
       - name: Disable Jekyll on Pages

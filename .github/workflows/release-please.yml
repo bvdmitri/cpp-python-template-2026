@@ -16,4 +16,6 @@ jobs:
       # merge, driving CHANGELOG.md and version bumps.
       - uses: googleapis/release-please-action@v4
         with:
-          release-type: cpp
+          # release-please has no dedicated C++ type; "simple" tracks the version
+          # and CHANGELOG and creates tags/releases from Conventional Commits.
+          release-type: simple
