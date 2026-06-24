@@ -27,12 +27,12 @@ jobs:
       - uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
-      - name: Ruff lint
-        run: uv run --group dev ruff check .
-      - name: Ruff format check
-        run: uv run --group dev ruff format --check .
+      # Use the Makefile targets so CI matches local exactly (they pass
+      # --no-editable so the built extension is importable).
+      - name: Ruff lint + format check
+        run: make py-lint
       - name: Mypy (strict)
-        run: uv run --group dev mypy
+        run: make py-typecheck
 
   test:
     name: pytest (${{ matrix.os }}, py${{ matrix.python }})
@@ -64,15 +64,12 @@ jobs:
         with:
           enable-cache: true
       - name: Run tests with coverage
-        run: >
-          uv run --python ${{ matrix.python }} --group dev
-          pytest --cov=mylib --cov-branch
-          --cov-report=xml:coverage-python.xml --cov-report=term
+        run: make py-coverage PY=${{ matrix.python }}
 
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
-          files: coverage-python.xml
+          files: out/coverage/python/coverage.xml
           flags: python
           name: python-${{ matrix.os }}-py${{ matrix.python }}
         env:

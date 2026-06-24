@@ -47,10 +47,9 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      # LLVM Clang on Windows needs the MSVC toolchain (headers/libs/linker).
-      - name: Set up MSVC environment (Windows)
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
+      # LLVM Clang on Windows auto-detects the installed MSVC toolchain (headers,
+      # libs, linker) via vswhere — no dev-shell action needed (and avoids the
+      # Node 20-only msvc-dev-cmd).
 
       - name: Configure
         run: cmake --preset ${{ matrix.preset }}
