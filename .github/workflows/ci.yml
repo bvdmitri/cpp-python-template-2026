@@ -93,7 +93,7 @@ jobs:
       - name: Build + test with coverage
         run: make coverage
       - name: Upload C++ coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: out/coverage/coverage.lcov
           flags: cpp
