@@ -23,15 +23,28 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: "Linux x86_64 (gcc)",   os: ubuntu-latest,    preset: dev }
-          - { name: "Linux arm64 (gcc)",    os: ubuntu-24.04-arm, preset: dev }
-          - { name: "macOS arm64 (clang)",  os: macos-14,         preset: dev }
-          - { name: "Windows x64 (msvc)",   os: windows-latest,   preset: dev }
+          - { name: "Linux x86_64 (gcc-14)", os: ubuntu-latest,    preset: dev, cc: gcc-14, cxx: g++-14 }
+          - { name: "Linux arm64 (gcc-14)",  os: ubuntu-24.04-arm, preset: dev, cc: gcc-14, cxx: g++-14 }
+          - { name: "macOS arm64 (clang)",   os: macos-14,         preset: dev }
+          - { name: "Windows x64 (msvc)",    os: windows-latest,   preset: dev }
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Ninja + CMake
         uses: lukka/get-cmake@latest
+
+      - name: Install GCC 14 (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get update && sudo apt-get install -y gcc-14 g++-14
+
+      - name: Select latest Xcode (macOS)
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - name: Set up MSVC environment (Windows)
         if: runner.os == 'Windows'

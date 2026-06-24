@@ -7,7 +7,7 @@
 ```cmake
 include(FetchContent)
 FetchContent_Declare(mylib
-  GIT_REPOSITORY https://github.com/your-org/mylib.git
+  GIT_REPOSITORY https://github.com/bvdmitri/cpp-python-template-2026.git
   GIT_TAG v0.1.0)
 FetchContent_MakeAvailable(mylib)
 target_link_libraries(your_app PRIVATE mylib::mylib)

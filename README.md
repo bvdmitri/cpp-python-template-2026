@@ -1,10 +1,10 @@
 # mylib
 
-[![CI](https://github.com/your-org/mylib/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/mylib/actions/workflows/ci.yml)
-[![Python](https://github.com/your-org/mylib/actions/workflows/python.yml/badge.svg)](https://github.com/your-org/mylib/actions/workflows/python.yml)
-[![CodeQL](https://github.com/your-org/mylib/actions/workflows/codeql.yml/badge.svg)](https://github.com/your-org/mylib/actions/workflows/codeql.yml)
-[![codecov](https://codecov.io/gh/your-org/mylib/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/mylib)
-[![docs](https://img.shields.io/badge/docs-Sphinx-blue)](https://your-org.github.io/mylib/)
+[![CI](https://github.com/bvdmitri/cpp-python-template-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/bvdmitri/cpp-python-template-2026/actions/workflows/ci.yml)
+[![Python](https://github.com/bvdmitri/cpp-python-template-2026/actions/workflows/python.yml/badge.svg)](https://github.com/bvdmitri/cpp-python-template-2026/actions/workflows/python.yml)
+[![CodeQL](https://github.com/bvdmitri/cpp-python-template-2026/actions/workflows/codeql.yml/badge.svg)](https://github.com/bvdmitri/cpp-python-template-2026/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/bvdmitri/cpp-python-template-2026/branch/main/graph/badge.svg)](https://codecov.io/gh/bvdmitri/cpp-python-template-2026)
+[![docs](https://img.shields.io/badge/docs-Sphinx-blue)](https://bvdmitri.github.io/cpp-python-template-2026/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![C++26](https://img.shields.io/badge/C%2B%2B-26-blue.svg)](https://en.cppreference.com/w/cpp/26)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
@@ -57,7 +57,7 @@ vcpkg install mylib   # once published to a registry
 ```cmake
 include(FetchContent)
 FetchContent_Declare(mylib
-  GIT_REPOSITORY https://github.com/your-org/mylib.git
+  GIT_REPOSITORY https://github.com/bvdmitri/cpp-python-template-2026.git
   GIT_TAG v0.1.0)
 FetchContent_MakeAvailable(mylib)
 target_link_libraries(your_app PRIVATE mylib::mylib)
@@ -99,7 +99,8 @@ After cloning, do the following to turn it into your real library:
    rename-sanity check in CONTRIBUTING/verification).
 2. **Update project metadata**: `project(... VERSION ...)` in `CMakeLists.txt`,
    the `name`/`version`/`homepage`/`description` in `vcpkg.json`, and the
-   `your-org/...` URLs in this README, `vcpkg.json`, badges, and workflows.
+   GitHub URLs (currently `bvdmitri/cpp-python-template-2026`) in this README,
+   `vcpkg.json`, badges, and workflows.
 3. **Set the copyright holder** in `LICENSE` (or swap MIT for another license).
 4. **Replace the toy API**: delete `sum.{hpp,cpp}` and `sum_test.cpp`; add your
    own headers under `include/<name>/`, sources under `src/`, tests under `test/`
@@ -137,7 +138,7 @@ the binding-friendly API rules and how to expose more of the library.
 
 ## Documentation
 
-- **[Unified docs site](https://your-org.github.io/mylib/)** — C++ **and** Python API in one Sphinx site (auto-deployed); build locally with `make docs`
+- **[Unified docs site](https://bvdmitri.github.io/cpp-python-template-2026/)** — C++ **and** Python API in one Sphinx site (auto-deployed); build locally with `make docs`
 - **[Contributing & IDE setup](CONTRIBUTING.md)** — Neovim / VSCode / CLion + `uv`
 - **[Coding standards](docs/design/coding-standards.md)** — stable, fast, safe modern C++
 - **[Test-driven development](docs/design/test-driven-development.md)**

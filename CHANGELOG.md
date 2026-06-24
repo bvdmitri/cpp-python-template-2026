@@ -34,4 +34,4 @@ via release-please, so prefer letting automation update this file.
   `dependency-management.md`.
 - `make format-check` target and an in-source-build guard.
 
-[Unreleased]: https://github.com/your-org/mylib/commits/main
+[Unreleased]: https://github.com/bvdmitri/cpp-python-template-2026/commits/main

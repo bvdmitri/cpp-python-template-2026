@@ -6,7 +6,7 @@ bindings. This site documents **both** the C++ API and the Python API in one pla
 `mylib` is a placeholder name and the shipped feature (`sum`) is intentionally
 trivial — the value of the template is its engineering infrastructure (TDD,
 cross-platform CI, sanitizers, coverage, packaging, and these docs). See the
-[GitHub repository](https://github.com/your-org/mylib) for the full project.
+[GitHub repository](https://github.com/bvdmitri/cpp-python-template-2026) for the full project.
 
 ```{toctree}
 :maxdepth: 2

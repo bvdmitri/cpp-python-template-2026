@@ -25,7 +25,7 @@ endif()
 project(mylib
   VERSION 0.1.0
   DESCRIPTION "A 2026-grade modern C++ library template"
-  HOMEPAGE_URL "https://github.com/your-org/mylib"
+  HOMEPAGE_URL "https://github.com/bvdmitri/cpp-python-template-2026"
   LANGUAGES CXX)
 
 # --- Project-wide policy -----------------------------------------------------

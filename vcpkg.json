@@ -3,7 +3,7 @@
   "name": "mylib",
   "version": "0.1.0",
   "description": "A 2026-grade modern C++ library template",
-  "homepage": "https://github.com/your-org/mylib",
+  "homepage": "https://github.com/bvdmitri/cpp-python-template-2026",
   "license": "MIT",
   "builtin-baseline": "930ecc42b512b564571d767f70775d284a6fa307",
   "dependencies": [],

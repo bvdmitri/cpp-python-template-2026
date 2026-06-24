@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/mylib"
+Homepage = "https://github.com/bvdmitri/cpp-python-template-2026"
 
 # Dev tooling (PEP 735 dependency groups; installed by `uv run --group dev/docs`).
 [dependency-groups]
