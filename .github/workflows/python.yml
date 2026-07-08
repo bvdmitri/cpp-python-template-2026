@@ -24,7 +24,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - name: Install GCC 14
         run: sudo apt-get update && sudo apt-get install -y gcc-14 g++-14
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
       # Use the Makefile targets so CI matches local exactly (they pass
@@ -60,7 +60,7 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
       - name: Run tests with coverage
