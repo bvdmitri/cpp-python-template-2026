@@ -122,7 +122,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - name: Install Clang 18
         run: sudo apt-get update && sudo apt-get install -y clang-18
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with: { python-version: "3.x" }
       - name: Generate compile database (clang, for matching clang-tidy)
         run: cmake --preset dev
